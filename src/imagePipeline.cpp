@@ -178,14 +178,7 @@ int ImagePipeline::getTemplateID(Boxes& boxes)
         Mat descriptors_scene;
         detector->detectAndCompute( scene_img, noArray(), keypoints_scene, descriptors_scene);
 
-		//-- Draw keypoints
-        //Mat img_keypoints;
-        //drawKeypoints( scene_img, keypoints_scene, img_keypoints );
-        //-- Show detected (drawn) keypoints
-        //imshow("SURF Keypoints", img_keypoints );
-        //cv::waitKey(30);
-
-		if (keypoints_scene.size() < 100)
+	if (keypoints_scene.size() < 100)
         {
             std::cout << "Blank Image" << "\n\n";
             return 0;
@@ -243,11 +236,6 @@ int ImagePipeline::getTemplateID(Boxes& boxes)
 
             //std::cout << "Size of good_matches:" << good_matches.size() << "\n";
 
-        	// outlier rejection and drawing matches
-            //Mat img_matches;
-            //drawMatches( img_object, keypoints_object, scene_img, keypoints_scene, good_matches, img_matches, Scalar::all(-1),
-            //     Scalar::all(-1), std::vector<char>(), DrawMatchesFlags::NOT_DRAW_SINGLE_POINTS );
-
         	// getting corresponding matching keypoints
             std::vector<Point2f> obj;
             std::vector<Point2f> scene;
@@ -300,23 +288,6 @@ int ImagePipeline::getTemplateID(Boxes& boxes)
             bool is_convex = isConvex(scene_corners);
             //std::cout << "Convex:" << is_convex << "\n";
 
-			/*if (img_id == 12)
-			//{
-				//-- Draw lines between the corners (the mapped object in the scene - image_2 ) for plotting
-				//line( img_matches, scene_corners[0] + Point2f((float)img_object.cols, 0),
-				//		scene_corners[1] + Point2f((float)img_object.cols, 0), Scalar(0, 255, 0), 4 );
-				//line( img_matches, scene_corners[1] + Point2f((float)img_object.cols, 0),
-				//		scene_corners[2] + Point2f((float)img_object.cols, 0), Scalar( 0, 255, 0), 4 );
-				//line( img_matches, scene_corners[2] + Point2f((float)img_object.cols, 0),
-				//		scene_corners[3] + Point2f((float)img_object.cols, 0), Scalar( 0, 255, 0), 4 );
-				//line( img_matches, scene_corners[3] + Point2f((float)img_object.cols, 0),
-				//		scene_corners[0] + Point2f((float)img_object.cols, 0), Scalar( 0, 255, 0), 4 );
-				//-- Show detected matches
-
-				//imshow("Good Matches & Object detection", img_matches );
-				//cv::waitKey(30);
-			}*/
-
             if (is_convex && area > 100000 )
             {
 	            // Get the predicted scene key points using homography transformation from object key points
@@ -334,19 +305,6 @@ int ImagePipeline::getTemplateID(Boxes& boxes)
 	                }
 	            }
 
-	            //std::cout << "size of inlier matches: " << obj_inlier.size() << "\n";
-
-	            // draw inlier matches
-	            //std::vector<DMatch> inlier_matches;
-
-	            //for (size_t i = 0; i < good_matches.size(); i++)
-	            //{
-	            //    if(std::find(obj_inlier.begin(), obj_inlier.end(), keypoints_object[ good_matches[i].queryIdx ].pt) != obj_inlier.end())
-	            //    {
-	            //        inlier_matches.push_back(good_matches[i]);
-	            //    }
-	            //}
-
 	            if (obj_inlier.size() > 6)  // <=4 means the H matrix was form by exact pt so mse=0
 	            {
 	                std::vector<Point2f> pred_scene(obj_inlier.size());
@@ -360,24 +318,6 @@ int ImagePipeline::getTemplateID(Boxes& boxes)
 	                    continue;
 	                }
 	                
-	                /*for (int pt_i=0; pt_i < obj_inlier.size(); pt_i++)
-	                {
-	                    drawMarker( img_object, obj_inlier[pt_i], Scalar::all(-1));
-	                }
-	                imshow("object frame", img_object );
-	                cv::waitKey(30);
-	                imwrite("object_frame.jpg", img_object);*/
-	                /*
-	                for (int pt_i=0; pt_i < pred_scene.size(); pt_i++)
-	                {
-	                    drawMarker( scene_img, pred_scene[pt_i], Scalar::all(-1), MARKER_SQUARE, 10);
-	                    drawMarker( scene_img, scene_inlier[pt_i], Scalar::all(-1), MARKER_STAR, 5);
-	                    line( scene_img, pred_scene[pt_i], scene_inlier[pt_i], Scalar::all(-1), 1);
-	                }             
-	                imshow("pred scene frame", scene_img );
-	                cv::waitKey(30);
-	                imwrite("pred_scene.jpg", scene_img);
-	                */
 	                // Evaluation for image similarity by computing mean squared distances between predicted and true scene keypoints
 	                float mse = 0;
 	                float curr_dist = 0;
